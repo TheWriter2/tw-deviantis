@@ -1,0 +1,19 @@
+{
+"title":"Welcome!",
+"topbar_style":0,
+"items":[
+    {
+        "type":"button",
+        "text":"Click Me!",
+        "size":{
+            "x":200,
+            "y":200
+        },
+        "position":{
+            "x":0,
+            "y":0
+        },
+        "click":""
+    }
+]
+}
