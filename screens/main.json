@@ -1,20 +1,29 @@
 {
 "title":"Welcome!",
-"topbar_style":0,
-"button_style":0,
+
+"topbar":{
+    "style":0,
+    "font":"default"
+},
+
+"style":{
+    "button":0
+},
+
 "items":[
     {
         "type":"button",
         "text":"Click Me!",
-        "size":{
-            "x":128,
-            "y":48
-        },
-        "position":{
-            "x":200,
-            "y":400
-        },
-        "click":""
+        "size":{ "x": 128, "y": 48 },
+        "font_size":20,
+        "position":{ "x": 200, "y": 400 }
+    },
+    {
+        "type":"button",
+        "text":"Click Me Too!",
+        "size":{ "x": 192, "y": 64 },
+        "font_size":24,
+        "position":{ "x": 400, "y": 180 }
     }
 ]
 }

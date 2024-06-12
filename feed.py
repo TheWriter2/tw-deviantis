@@ -33,11 +33,12 @@ def list_popular():
     res_dict.title = res_rss["feed"]["title"]
     res_dict.description = res_rss["feed"]["description"]
     
-    print("[DEBUG]")
-    print("Title: " + str(res_rss["feed"]["title"]))
-    print("Description: " + str(res_rss["feed"]["description"]))
-    print("\nItems:")
+    #print("[DEBUG]")
+    #print("Title: " + str(res_rss["feed"]["title"]))
+    #print("Description: " + str(res_rss["feed"]["description"]))
+    #print("\nItems:")
 
+    img_pos = 0
     for i in res_rss["entries"]:
         for a in res_raw_lines:
             if i["link"] in a:
@@ -46,15 +47,17 @@ def list_popular():
         
         for a in res_raw_lines:
             if "media:content" in a:
-                res_raw_image = res_raw_lines[res_raw_lines.index(a)]
-                break
-        
-        res_dict.deviations.append(Deviation(i["title"], res_raw_author[53:-15], i["link"], i["published"], res_raw_image[res_raw_image.find('"') + 1:res_raw_image.find("height") - 3]))
+                if res_raw_lines.index(a) > img_pos:
+                    res_raw_image = res_raw_lines[res_raw_lines.index(a)]
+                    img_pos = res_raw_lines.index(a)
+                    break
 
-        print("'" + str(i["title"]) + "' by " + str(res_raw_author[53:-15]))
-        print(i["link"])
-        print("Published on " + str(i["published"]) + "\n")
-        #print("Image stored at: " + str(res_raw_image[res_raw_image.find('"') + 1:res_raw_image.find("height") - 3]) + "\n")
-    
+        res_dict.deviations.append(Deviation(i["title"], res_raw_author[53:-15], i["link"], i["published"], str(res_raw_image[res_raw_image.find("media:content") + 19:res_raw_image.find("medium") - 27].strip('"'))))
 
-    return
+    #for i in res_dict.deviations:
+    #    print("'" + i.name + "' by " + i.author)
+    #    print(i.url)
+    #    print("Published on " + i.date + "\n")
+    #    print("Image stored at: " + i.image_url + "\n")
+
+    return res_dict
