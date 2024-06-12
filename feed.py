@@ -1,27 +1,22 @@
 import requests
-import rss_parser
-import rss_parser.models
-import rss_parser.models.rss
-import rss_parser.models.rss.channel
-import rss_parser.models.rss.item
+import feedparser
 
 class Deviation:
-    def __init__(self):
-        self.name = ""
-        self.author = ""
-        self.url = ""
+    def __init__(self, name="", author="", url="", date="", image=""):
+        self.name = name
+        self.author = author
+        self.url = url
         self.nsfw = False
-        self.date = ""
+        self.date = date
         self.description = ""
-        self.image_url = ""
+        self.image_url = image
         self.thumb_url = ""
 
 class Gallery:
     def __init__(self):
         self.title = ""
         self.description = ""
-        self.deviations = [Deviation()]
-        self.count = 0
+        self.deviations = []
 
 
 def list_popular():
@@ -33,27 +28,33 @@ def list_popular():
         return None
     
     res_raw_lines = res_raw.text.splitlines()
-    res_rss = rss_parser.RSSParser.parse(res_raw.text)
+    res_rss = feedparser.parse(base_url)
 
-    res_dict.title = res_rss.channel.title.content
-    res_dict.description = res_rss.channel.description.content
-    #print("[DEBUG]")
-    #print(type(res_rss.channel))
-    #print(type(res_rss.channel.content))
-    #print(type(res_rss.channel.content.items))
+    res_dict.title = res_rss["feed"]["title"]
+    res_dict.description = res_rss["feed"]["description"]
+    
+    print("[DEBUG]")
+    print("Title: " + str(res_rss["feed"]["title"]))
+    print("Description: " + str(res_rss["feed"]["description"]))
+    print("\nItems:")
 
-    for i in res_rss.channel.items:
+    for i in res_rss["entries"]:
         for a in res_raw_lines:
-            if i.content.guid.content in a:
+            if i["link"] in a:
                 res_raw_author = res_raw_lines[res_raw_lines.index(a) + 7]
                 break
         
-        res_dict.deviations.append(Deviation())
-        res_dict.deviations[res_dict.count].name = i.content.title.content
-        res_dict.deviations[res_dict.count].author = res_raw_author[53:-15]
-        res_dict.deviations[res_dict.count].date = i.content.pub_date.content
-        res_dict.deviations[res_dict.count].url = i.content.guid.content
+        for a in res_raw_lines:
+            if "media:content" in a:
+                res_raw_image = res_raw_lines[res_raw_lines.index(a)]
+                break
+        
+        res_dict.deviations.append(Deviation(i["title"], res_raw_author[53:-15], i["link"], i["published"], res_raw_image[res_raw_image.find('"') + 1:res_raw_image.find("height") - 3]))
 
-        res_dict.count += 1
+        print("'" + str(i["title"]) + "' by " + str(res_raw_author[53:-15]))
+        print(i["link"])
+        print("Published on " + str(i["published"]) + "\n")
+        #print("Image stored at: " + str(res_raw_image[res_raw_image.find('"') + 1:res_raw_image.find("height") - 3]) + "\n")
     
+
     return
